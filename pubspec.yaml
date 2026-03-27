@@ -36,6 +36,10 @@ dependencies:
   cupertino_icons: ^1.0.8
   flutter_native_splash: ^2.4.7
   google_fonts: ^8.0.2
+  permission_handler: ^12.0.1
+  shared_preferences: ^2.5.5
+  video_player: ^2.9.1
+  audio_session: ^0.1.21
 
 dev_dependencies:
   flutter_test:
@@ -62,6 +66,8 @@ flutter:
   assets:
     - assets/
     - assets/splash_screen/
+    - assets/onboarding/
+    - assets/welcome.mp4
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

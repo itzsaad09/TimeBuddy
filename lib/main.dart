@@ -1,20 +1,52 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
+import 'package:audio_session/audio_session.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'constants/app_theme.dart';
+import 'onboarding/onboardscreenmanager.dart';
+import 'screens/welcome_video_screen.dart';
 
-void main() {
-  runApp(const MyApp());
+void main() async {
+  WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+  FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
+
+  // Configure Audio Session for video playback sound
+  final session = await AudioSession.instance;
+  await session.configure(const AudioSessionConfiguration.music());
+
+  // Enable Full Screen / Edge-to-Edge Mode
+  SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+  SystemChrome.setSystemUIOverlayStyle(
+    const SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+      systemNavigationBarColor: Colors.transparent,
+      statusBarIconBrightness: Brightness.light,
+      systemNavigationBarIconBrightness: Brightness.light,
+    ),
+  );
+
+  final prefs = await SharedPreferences.getInstance();
+  final bool onboardingDone = prefs.getBool('onboarding_done') ?? false;
+
+  runApp(MyApp(onboardingDone: onboardingDone));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final bool onboardingDone;
+  const MyApp({super.key, required this.onboardingDone});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'TimeBuddy Design System',
+      title: 'TimeBuddy',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
-      home: const DesignSystemGallery(),
+      routes: {
+        '/home': (context) => const DesignSystemGallery(),
+        '/onboarding': (context) => const OnboardScreenManager(),
+      },
+      home: WelcomeVideoScreen(onboardingDone: onboardingDone),
     );
   }
 }
