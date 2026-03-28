@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'permissions/micpermission.dart';
 import 'permissions/notificationpermission.dart';
 import 'permissions/storagepermission.dart';
 import '../constants/app_theme.dart';
+import '../screens/welcome_video_screen.dart';
 
 class OnboardScreenManager extends StatefulWidget {
   const OnboardScreenManager({super.key});
@@ -16,6 +18,12 @@ class OnboardScreenManager extends StatefulWidget {
 class _OnboardScreenManagerState extends State<OnboardScreenManager> {
   final PageController _pageController = PageController();
   int _currentPage = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    FlutterNativeSplash.remove();
+  }
 
   Future<void> _completeOnboarding() async {
     // Request all permissions at the end including Android 13+ media permissions
@@ -31,8 +39,10 @@ class _OnboardScreenManagerState extends State<OnboardScreenManager> {
     await prefs.setBool('onboarding_done', true);
     if (!mounted) return;
 
-    // Navigate to the main app screen using defined route
-    Navigator.of(context).pushReplacementNamed('/home');
+    // Navigate to the welcome video after onboarding
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(builder: (context) => const WelcomeVideoScreen()),
+    );
   }
 
   Future<void> _handleNext() async {
@@ -40,7 +50,6 @@ class _OnboardScreenManagerState extends State<OnboardScreenManager> {
       await Permission.microphone.request();
     } else if (_currentPage == 1) {
       // For newer android versions (Android 13+), we request photos/videos
-      // This is the granular replacement for .storage
       await [
         Permission.storage,
         Permission.photos,

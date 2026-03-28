@@ -3,9 +3,7 @@ import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:video_player/video_player.dart';
 
 class WelcomeVideoScreen extends StatefulWidget {
-  final bool onboardingDone;
-
-  const WelcomeVideoScreen({super.key, required this.onboardingDone});
+  const WelcomeVideoScreen({super.key});
 
   @override
   State<WelcomeVideoScreen> createState() => _WelcomeVideoScreenState();
@@ -18,32 +16,44 @@ class _WelcomeVideoScreenState extends State<WelcomeVideoScreen> {
   @override
   void initState() {
     super.initState();
-    _controller = VideoPlayerController.asset('assets/welcome.mp4')
-      ..initialize().then((_) {
-        if (mounted) {
-          setState(() {
-            _initialized = true;
-          });
-          _controller.setVolume(1.0);
-          _controller.setLooping(false);
-          _controller.play();
-          FlutterNativeSplash.remove();
-          // Navigate when video finishes
-          _controller.addListener(() {
-            if (_controller.value.position >= _controller.value.duration) {
-              _onVideoComplete();
-            }
-          });
-        }
+    _initializeVideo();
+  }
+
+  Future<void> _initializeVideo() async {
+    try {
+      _controller = VideoPlayerController.asset('assets/welcome.mp4');
+      await _controller.initialize();
+
+      if (!mounted) return;
+
+      setState(() {
+        _initialized = true;
       });
+
+      _controller.setVolume(1.0);
+      _controller.setLooping(false);
+      _controller.play();
+      FlutterNativeSplash.remove();
+
+      _controller.addListener(_videoListener);
+    } catch (e) {
+      debugPrint("Video Init Error: $e");
+      // If video fails, don't crash the app, just go to home
+      FlutterNativeSplash.remove();
+      _onVideoComplete();
+    }
+  }
+
+  void _videoListener() {
+    if (_controller.value.position >= _controller.value.duration) {
+      _onVideoComplete();
+    }
   }
 
   void _onVideoComplete() {
     if (!mounted) return;
-    // Replace with the next screen logic
-    Navigator.of(
-      context,
-    ).pushReplacementNamed(widget.onboardingDone ? '/home' : '/onboarding');
+    // Always navigate to the home screen after welcome video
+    Navigator.of(context).pushReplacementNamed('/home');
   }
 
   @override
