@@ -27,18 +27,18 @@ class TimeBuddyNavBar extends StatelessWidget {
           filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
           child: Container(
             decoration: BoxDecoration(
-              color: brandBlue.withOpacity(0.85),
+              color: brandBlue.withValues(alpha: 0.85),
               borderRadius: const BorderRadius.only(
                 topLeft: Radius.circular(40),
                 topRight: Radius.circular(40),
               ),
               border: Border.all(
-                color: Colors.white.withOpacity(0.15),
+                color: Colors.white.withValues(alpha: 0.15),
                 width: 1,
               ),
               boxShadow: [
                 BoxShadow(
-                  color: brandBlue.withOpacity(0.3),
+                  color: brandBlue.withValues(alpha: 0.3),
                   blurRadius: 30,
                   offset: const Offset(0, -10),
                 ),
@@ -118,11 +118,11 @@ class _NavBarItem extends StatelessWidget {
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(25),
               color: isSelected
-                  ? Colors.white.withOpacity(0.2)
+                  ? Colors.white.withValues(alpha: 0.2)
                   : Colors.transparent,
               border: Border.all(
                 color: isSelected
-                    ? Colors.white.withOpacity(0.1)
+                    ? Colors.white.withValues(alpha: 0.1)
                     : Colors.transparent,
                 width: 1,
               ),

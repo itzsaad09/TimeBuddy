@@ -11,27 +11,14 @@ class TermsServiceScreen extends StatelessWidget {
       backgroundColor: AppTheme.surface,
       body: Column(
         children: [
-          const TimeBuddyHeader(),
+          const TimeBuddySubHeader(title: 'Terms of Service'),
           Expanded(
             child: SingleChildScrollView(
               padding: const EdgeInsets.all(24),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                    children: [
-                      IconButton(
-                        onPressed: () => Navigator.pop(context),
-                        icon: const Icon(Icons.arrow_back_ios_new_rounded),
-                      ),
-                      const SizedBox(width: 8),
-                      Text(
-                        'Terms of Service',
-                        style: Theme.of(context).textTheme.headlineMedium,
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 32),
+                  const SizedBox(height: 12),
                   _buildTermsCard(
                     title: '1. User Account',
                     content:

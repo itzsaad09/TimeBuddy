@@ -34,13 +34,13 @@ jobs:
       # --- BUILD COMMANDS (Unsigned) ---
       - name: Build Android APK
         run: |
-          flutter build apk --release
+          flutter build apk --release --build-name=1.0.${{ github.run_number }} --build-number=${{ github.run_number }}
           cd build/app/outputs/flutter-apk/
           mv app-release.apk timebuddy-v1.0.${{ github.run_number }}.apk
 
       - name: Build and Rename iOS IPA
         run: |
-          flutter build ios --release --no-codesign
+          flutter build ios --release --no-codesign --build-name=1.0.${{ github.run_number }} --build-number=${{ github.run_number }}
           cd build/ios/iphoneos
           mkdir -p Payload
           cp -r Runner.app Payload/

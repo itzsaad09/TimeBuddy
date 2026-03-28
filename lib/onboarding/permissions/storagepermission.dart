@@ -21,8 +21,8 @@ class StoragePermissionScreen extends StatelessWidget {
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
               colors: [
-                Colors.black.withOpacity(0.1),
-                Colors.black.withOpacity(0.6),
+                Colors.black.withValues(alpha: 0.1),
+                Colors.black.withValues(alpha: 0.6),
               ],
             ),
           ),
@@ -42,7 +42,7 @@ class StoragePermissionScreen extends StatelessWidget {
                 'Storage permission is required to save your progress and manage your files locally.',
                 textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                  color: Colors.white.withOpacity(0.8),
+                  color: Colors.white.withValues(alpha: 0.8),
                 ),
               ),
               const Spacer(),

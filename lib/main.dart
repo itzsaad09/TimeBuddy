@@ -7,6 +7,7 @@ import 'constants/app_theme.dart';
 import 'onboarding/onboardscreenmanager.dart';
 import 'screens/welcome_video_screen.dart';
 import 'screens/settings/settings_screen.dart';
+import 'screens/profile/profile_screen.dart';
 import 'utils/navbar.dart';
 import 'utils/header.dart';
 
@@ -86,6 +87,7 @@ class MyApp extends StatelessWidget {
         '/home': (context) => const DesignSystemGallery(),
         '/onboarding': (context) => const OnboardScreenManager(),
         '/settings': (context) => const SettingsScreen(),
+        '/profile': (context) => const ProfileScreen(),
       },
       home: (lastRoute == 'settings' && onboardingDone)
           ? const SettingsScreen()

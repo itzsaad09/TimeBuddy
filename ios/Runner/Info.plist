@@ -50,6 +50,10 @@
 		<key>NSMicrophoneUsageDescription</key>
 		<string>This app needs access to the microphone to allow you to talk to Buddy.</string>
 		<key>NSPhotoLibraryUsageDescription</key>
-		<string>This app needs access to the photo library to save your progress images.</string>
+		<string>This app needs access to the photo library to choose your profile picture.</string>
+		<key>NSCameraUsageDescription</key>
+		<string>This app needs access to the camera to take a profile picture.</string>
+		<key>ITSAppUsesNonExemptEncryption</key>
+		<false/>
 	</dict>
 </plist>

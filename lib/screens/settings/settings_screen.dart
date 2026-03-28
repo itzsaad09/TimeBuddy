@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import '../../constants/app_theme.dart';
 import '../../utils/header.dart';
 import '../../utils/navbar.dart';
@@ -24,6 +25,10 @@ class _SettingsScreenState extends State<SettingsScreen>
   bool _micPermission = false;
   bool _storagePermission = false;
   bool _isChecking = false;
+  String _studentName = "Alex Explorer";
+  String _studentClass = "Level 12 Guardian";
+  String? _profilePicPath;
+  String _appVersion = "1.0.0";
 
   @override
   void initState() {
@@ -31,10 +36,27 @@ class _SettingsScreenState extends State<SettingsScreen>
     FlutterNativeSplash.remove();
     WidgetsBinding.instance.addObserver(this);
     _checkAllPermissions();
-    _saveLastRoute();
+    _loadProfileData();
+    _loadAppInfo();
   }
 
-  Future<void> _saveLastRoute() async {
+  Future<void> _loadAppInfo() async {
+    final info = await PackageInfo.fromPlatform();
+    setState(() {
+      _appVersion = "v${info.version}+${info.buildNumber}";
+    });
+  }
+
+  Future<void> _loadProfileData() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _studentName = prefs.getString('student_name') ?? "Alex Explorer";
+      _studentClass = prefs.getString('student_class') ?? "Level 12 Guardian";
+      _profilePicPath = prefs.getString('student_profile_pic');
+    });
+  }
+
+  Future<void> _armRecovery() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('last_route', 'settings');
     await prefs.setBool('is_permission_restart', true);
@@ -85,6 +107,9 @@ class _SettingsScreenState extends State<SettingsScreen>
     Permission permission,
     bool toggleOn,
   ) async {
+    // Only arm recovery when the user actually interacts with a permission
+    await _armRecovery();
+
     try {
       if (toggleOn) {
         // Show dialog
@@ -147,9 +172,14 @@ class _SettingsScreenState extends State<SettingsScreen>
                     icon: Icons.person_outline_rounded,
                     iconBg: const Color(0xFF64FFDA),
                     iconColor: const Color(0xFF2C2F30),
-                    title: 'Alex Explorer',
-                    subtitle: 'Level 12 Guardian',
+                    title: _studentName,
+                    subtitle: _studentClass,
+                    imagePath: _profilePicPath,
                     actionText: 'View Profile ›',
+                    onTap: () async {
+                      await Navigator.pushNamed(context, '/profile');
+                      _loadProfileData();
+                    },
                   ),
                   const SizedBox(height: 16),
                   ParentModePortalCard(),
@@ -292,9 +322,9 @@ class _SettingsScreenState extends State<SettingsScreen>
   }
 
   Widget _buildVersionText() {
-    return const Center(
+    return Center(
       child: Text(
-        'VERSION 1.0.1 (STABLE)',
+        _appVersion.toUpperCase(),
         style: TextStyle(
           color: Color(0xFFBDC3C7),
           fontSize: 11,

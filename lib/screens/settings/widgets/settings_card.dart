@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import '../../../constants/app_theme.dart';
 
@@ -9,6 +10,7 @@ class SettingsInfoCard extends StatelessWidget {
   final String subtitle;
   final String? actionText;
   final VoidCallback? onTap;
+  final String? imagePath;
 
   const SettingsInfoCard({
     super.key,
@@ -19,6 +21,7 @@ class SettingsInfoCard extends StatelessWidget {
     required this.subtitle,
     this.actionText,
     this.onTap,
+    this.imagePath,
   });
 
   @override
@@ -33,9 +36,14 @@ class SettingsInfoCard extends StatelessWidget {
       child: Row(
         children: [
           Container(
-            padding: const EdgeInsets.all(8),
+            width: 50,
+            height: 50,
             decoration: BoxDecoration(color: iconBg, shape: BoxShape.circle),
-            child: Icon(icon, color: iconColor, size: 30),
+            child: ClipOval(
+              child: imagePath != null
+                  ? Image.file(File(imagePath!), fit: BoxFit.cover)
+                  : Icon(icon, color: iconColor, size: 30),
+            ),
           ),
           const SizedBox(width: 16),
           Expanded(

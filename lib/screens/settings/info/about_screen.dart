@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../constants/app_theme.dart';
 import '../../../utils/header.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'terms_service_screen.dart';
 
 class AboutScreen extends StatelessWidget {
@@ -12,27 +13,14 @@ class AboutScreen extends StatelessWidget {
       backgroundColor: AppTheme.surface,
       body: Column(
         children: [
-          const TimeBuddyHeader(),
+          const TimeBuddySubHeader(title: 'About TimeBuddy'),
           Expanded(
             child: SingleChildScrollView(
               padding: const EdgeInsets.all(24),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                    children: [
-                      IconButton(
-                        onPressed: () => Navigator.pop(context),
-                        icon: const Icon(Icons.arrow_back_ios_new_rounded),
-                      ),
-                      const SizedBox(width: 8),
-                      Text(
-                        'About TimeBuddy',
-                        style: Theme.of(context).textTheme.headlineMedium,
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 32),
+                  const SizedBox(height: 12),
 
                   // Brand Card
                   Container(
@@ -87,10 +75,18 @@ class AboutScreen extends StatelessWidget {
                         'To empower children and parents through fun, game-like habit building and focus management.',
                   ),
                   const SizedBox(height: 20),
-                  _buildAboutSection(
-                    title: 'Version History',
-                    content:
-                        'v1.0.1 - Launch Edition\nPolished UI and Buddy AI core integration.',
+                  FutureBuilder<PackageInfo>(
+                    future: PackageInfo.fromPlatform(),
+                    builder: (context, snapshot) {
+                      final version = snapshot.hasData
+                          ? "v${snapshot.data!.version}+${snapshot.data!.buildNumber}"
+                          : "v1.0.0";
+                      return _buildAboutSection(
+                        title: 'Version History',
+                        content:
+                            '$version - Build Edition\nPolished UI and Buddy AI core integration.',
+                      );
+                    },
                   ),
                   const SizedBox(height: 20),
                   GestureDetector(
@@ -127,7 +123,7 @@ class AboutScreen extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.6),
+        color: Colors.white.withValues(alpha: 0.6),
         borderRadius: BorderRadius.circular(32),
         border: Border.all(color: Colors.white, width: 2),
       ),

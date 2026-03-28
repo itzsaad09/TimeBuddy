@@ -96,7 +96,7 @@ class _OnboardScreenManagerState extends State<OnboardScreenManager> {
                   decoration: BoxDecoration(
                     color: _currentPage == index
                         ? AppTheme.primary
-                        : AppTheme.primary.withOpacity(0.2),
+                        : AppTheme.primary.withValues(alpha: 0.2),
                     borderRadius: BorderRadius.circular(4),
                   ),
                 );

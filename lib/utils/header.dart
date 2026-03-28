@@ -18,7 +18,7 @@ class TimeBuddyHeader extends StatelessWidget {
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 15,
             offset: const Offset(0, 8),
           ),
@@ -76,7 +76,7 @@ class TimeBuddyHeader extends StatelessWidget {
               Container(
                 decoration: BoxDecoration(
                   color: isSettings
-                      ? brandBlue.withOpacity(0.12)
+                      ? brandBlue.withValues(alpha: 0.12)
                       : Colors.transparent,
                   shape: BoxShape.circle,
                 ),
@@ -97,6 +97,66 @@ class TimeBuddyHeader extends StatelessWidget {
                   ),
                 ),
               ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class TimeBuddySubHeader extends StatelessWidget {
+  final String title;
+  final VoidCallback? onBack;
+
+  const TimeBuddySubHeader({super.key, required this.title, this.onBack});
+
+  @override
+  Widget build(BuildContext context) {
+    const Color brandBlue = Color(0xFF38B6FF);
+
+    return Container(
+      width: double.infinity,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: const BorderRadius.only(
+          bottomLeft: Radius.circular(36),
+          bottomRight: Radius.circular(36),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.04),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: SafeArea(
+        bottom: false,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(8, 8, 24, 16),
+          child: Row(
+            children: [
+              IconButton(
+                onPressed: onBack ?? () => Navigator.of(context).pop(),
+                icon: const Icon(
+                  Icons.arrow_back_ios_new_rounded,
+                  color: brandBlue,
+                  size: 20,
+                ),
+              ),
+              const Expanded(child: SizedBox()),
+              Text(
+                title,
+                style: const TextStyle(
+                  color: Color(0xFF2C2F30),
+                  fontSize: 19,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: -0.5,
+                ),
+              ),
+              const Spacer(),
+              const SizedBox(width: 48), // Balancing spacer
             ],
           ),
         ),
