@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:permission_handler/permission_handler.dart';
 import '../../constants/app_theme.dart';
@@ -27,6 +28,7 @@ class _SettingsScreenState extends State<SettingsScreen>
   @override
   void initState() {
     super.initState();
+    FlutterNativeSplash.remove();
     WidgetsBinding.instance.addObserver(this);
     _checkAllPermissions();
     _saveLastRoute();
@@ -35,6 +37,7 @@ class _SettingsScreenState extends State<SettingsScreen>
   Future<void> _saveLastRoute() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('last_route', 'settings');
+    await prefs.setBool('is_permission_restart', true);
   }
 
   @override
@@ -120,7 +123,7 @@ class _SettingsScreenState extends State<SettingsScreen>
       extendBody: true,
       body: Column(
         children: [
-          const TimeBuddyHeader(),
+          const TimeBuddyHeader(isSettings: true),
           Expanded(
             child: SingleChildScrollView(
               padding: const EdgeInsets.only(
@@ -243,7 +246,7 @@ class _SettingsScreenState extends State<SettingsScreen>
         ],
       ),
       bottomNavigationBar: TimeBuddyNavBar(
-        currentIndex: 4,
+        currentIndex: -1,
         onTap: (index) {
           if (index == 0) Navigator.of(context).pushReplacementNamed('/home');
         },

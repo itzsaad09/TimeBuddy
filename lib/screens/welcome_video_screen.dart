@@ -3,7 +3,8 @@ import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:video_player/video_player.dart';
 
 class WelcomeVideoScreen extends StatefulWidget {
-  const WelcomeVideoScreen({super.key});
+  final bool shouldSkip;
+  const WelcomeVideoScreen({super.key, this.shouldSkip = false});
 
   @override
   State<WelcomeVideoScreen> createState() => _WelcomeVideoScreenState();
@@ -16,7 +17,19 @@ class _WelcomeVideoScreenState extends State<WelcomeVideoScreen> {
   @override
   void initState() {
     super.initState();
-    _initializeVideo();
+    if (widget.shouldSkip) {
+      // If we are recovering from a crash/restart, skip the heavy media engine
+      _skipDirectly();
+    } else {
+      _initializeVideo();
+    }
+  }
+
+  void _skipDirectly() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      FlutterNativeSplash.remove();
+      _onVideoComplete();
+    });
   }
 
   Future<void> _initializeVideo() async {
@@ -38,7 +51,6 @@ class _WelcomeVideoScreenState extends State<WelcomeVideoScreen> {
       _controller.addListener(_videoListener);
     } catch (e) {
       debugPrint("Video Init Error: $e");
-      // If video fails, don't crash the app, just go to home
       FlutterNativeSplash.remove();
       _onVideoComplete();
     }
@@ -52,13 +64,12 @@ class _WelcomeVideoScreenState extends State<WelcomeVideoScreen> {
 
   void _onVideoComplete() {
     if (!mounted) return;
-    // Always navigate to the home screen after welcome video
     Navigator.of(context).pushReplacementNamed('/home');
   }
 
   @override
   void dispose() {
-    _controller.dispose();
+    if (_initialized) _controller.dispose();
     super.dispose();
   }
 

@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 
 class TimeBuddyHeader extends StatelessWidget {
-  const TimeBuddyHeader({super.key});
+  final bool isSettings;
+  const TimeBuddyHeader({super.key, this.isSettings = false});
 
   @override
   Widget build(BuildContext context) {
@@ -71,17 +72,29 @@ class TimeBuddyHeader extends StatelessWidget {
                 ),
               ),
               const Spacer(),
-              // Settings Icon
-              IconButton(
-                padding: EdgeInsets.zero,
-                constraints: const BoxConstraints(),
-                onPressed: () {
-                  Navigator.of(context).pushNamed('/settings');
-                },
-                icon: const Icon(
-                  Icons.settings_outlined,
-                  color: Color(0xFF8E99A3),
-                  size: 26,
+              // Settings Icon with Selection Indicator
+              Container(
+                decoration: BoxDecoration(
+                  color: isSettings
+                      ? brandBlue.withOpacity(0.12)
+                      : Colors.transparent,
+                  shape: BoxShape.circle,
+                ),
+                child: IconButton(
+                  padding: const EdgeInsets.all(8),
+                  constraints: const BoxConstraints(),
+                  onPressed: () {
+                    if (!isSettings) {
+                      Navigator.of(context).pushNamed('/settings');
+                    }
+                  },
+                  icon: Icon(
+                    isSettings
+                        ? Icons.settings_rounded
+                        : Icons.settings_outlined,
+                    color: isSettings ? brandBlue : const Color(0xFF8E99A3),
+                    size: 26,
+                  ),
                 ),
               ),
             ],

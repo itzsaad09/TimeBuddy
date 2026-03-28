@@ -6,44 +6,75 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'constants/app_theme.dart';
 import 'onboarding/onboardscreenmanager.dart';
 import 'screens/welcome_video_screen.dart';
-import 'screens/settings/settings_screen.dart'; // Add this
+import 'screens/settings/settings_screen.dart';
 import 'utils/navbar.dart';
-import 'utils/header.dart'; // Import header
+import 'utils/header.dart';
 
 void main() async {
+  // 1. Minimum initialization for basic start
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+
+  // 2. Preserve splash until we have the first real frame
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
 
-  // Configure Audio Session for video playback sound
-  final session = await AudioSession.instance;
-  await session.configure(const AudioSessionConfiguration.music());
+  // 3. Kickstart the UI immediately (Don't wait for heavy tasks)
+  try {
+    final prefs = await SharedPreferences.getInstance();
+    final bool onboardingDone = prefs.getBool('onboarding_done') ?? false;
+    final String? lastRoute = prefs.getString('last_route');
+    final bool shouldSkipVideo =
+        prefs.getBool('is_permission_restart') ?? false;
 
-  // Enable Full Screen / Edge-to-Edge Mode
-  SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
-  SystemChrome.setSystemUIOverlayStyle(
-    const SystemUiOverlayStyle(
-      statusBarColor: Colors.transparent,
-      systemNavigationBarColor: Colors.transparent,
-      statusBarIconBrightness:
-          Brightness.dark, // Changed to dark for light header
-      systemNavigationBarIconBrightness: Brightness.light,
-    ),
-  );
+    // Clear flags immediately
+    await prefs.remove('last_route');
+    await prefs.remove('is_permission_restart');
 
-  final prefs = await SharedPreferences.getInstance();
-  final bool onboardingDone = prefs.getBool('onboarding_done') ?? false;
-  final String? lastRoute = prefs.getString('last_route');
+    runApp(
+      MyApp(
+        onboardingDone: onboardingDone,
+        lastRoute: lastRoute,
+        shouldSkipVideo: shouldSkipVideo,
+      ),
+    );
 
-  // Clear current route after reading it so we don't get stuck in a loop
-  await prefs.remove('last_route');
+    // 4. Heavy tasks start in the background after UI is launched
+    _initializeBackgroundTasks();
+  } catch (e) {
+    debugPrint("Init Error: $e");
+    runApp(const MyApp(onboardingDone: false));
+  }
+}
 
-  runApp(MyApp(onboardingDone: onboardingDone, lastRoute: lastRoute));
+Future<void> _initializeBackgroundTasks() async {
+  try {
+    // These tasks are 'non-critical' for showing the first screen
+    final session = await AudioSession.instance;
+    await session.configure(const AudioSessionConfiguration.music());
+
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+    SystemChrome.setSystemUIOverlayStyle(
+      const SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent,
+        systemNavigationBarColor: Colors.transparent,
+        statusBarIconBrightness: Brightness.dark,
+        systemNavigationBarIconBrightness: Brightness.light,
+      ),
+    );
+  } catch (e) {
+    debugPrint("BG Task Error: $e");
+  }
 }
 
 class MyApp extends StatelessWidget {
   final bool onboardingDone;
   final String? lastRoute;
-  const MyApp({super.key, required this.onboardingDone, this.lastRoute});
+  final bool shouldSkipVideo;
+  const MyApp({
+    super.key,
+    required this.onboardingDone,
+    this.lastRoute,
+    this.shouldSkipVideo = false,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -59,7 +90,7 @@ class MyApp extends StatelessWidget {
       home: (lastRoute == 'settings' && onboardingDone)
           ? const SettingsScreen()
           : onboardingDone
-          ? const WelcomeVideoScreen()
+          ? WelcomeVideoScreen(shouldSkip: shouldSkipVideo)
           : const OnboardScreenManager(),
     );
   }
